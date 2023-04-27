@@ -7,35 +7,35 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Define the VPC
+# creating  the VPC
 resource "aws_vpc" "TF-VPC" {
   cidr_block = var.vpc_cidr_block
 }
 
-# Define the public subnet
+# creating the public subnet
 resource "aws_subnet" "public_sub" {
   vpc_id     = aws_vpc.TF-VPC.id
   cidr_block = var.public_subnet_cidr_block
 }
 
-# Define the private subnet
+# creating the private subnet
 resource "aws_subnet" "private_sub" {
   vpc_id     = aws_vpc.TF-VPC.id
   cidr_block = var.private_subnet_cidr_block
 }
 
-# Define the Cloud NAT gateway
+# creating the Cloud NAT gateway
 resource "aws_nat_gateway" "my_nat_gateway" {
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.private_sub.id
 }
 
-# Define the Elastic IP address for the NAT gateway
+# creating the Elastic IP address for the NAT gateway
 resource "aws_eip" "nat_eip" {
   vpc = true
 }
 
-# Define the virtual machine in the private subnet
+# creating  the virtual machine in the private subnet
 resource "aws_instance" "private_vm" {
   ami           = "ami-0c55b159cbfafe1f0"
   instance_type = "t2.micro"
@@ -49,7 +49,7 @@ resource "aws_instance" "private_vm" {
   associate_public_ip_address = true
 }
 
-# Define a security group to allow traffic to the NAT gateway and the virtual machine
+# creating a security group to allow traffic to the NAT gateway and the virtual machine
 resource "aws_security_group" "nat_security_group" {
   name_prefix = "nat-security-group"
   vpc_id      = aws_vpc.TF-VPC.id
@@ -89,7 +89,7 @@ resource "aws_security_group" "nat_security_group" {
   }
 }
 
-# Define a null_resource to execute the SSH command to check the public IP address of the private virtual machine
+# creating  a null_resource to execute the SSH command to check the public IP address of the private virtual machine
 resource "null_resource" "ssh_check_private_vm_public_ip" {
   depends_on = [aws_instance.private_vm]
   connection {
